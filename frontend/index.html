@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Nexus AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div id="loginScreen" class="auth-screen">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <div class="brand-mark">🏛️</div>
+                <div>
+                    <div class="eyebrow">University AI Platform</div>
+                    <h1>Campus Nexus AI</h1>
+                </div>
+            </div>
+
+            <div class="auth-copy">
+                <h2>Sign in to your workspace</h2>
+                <p>Access the campus knowledge assistant, document library, and admin analytics.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <label>
+                    <span>Username</span>
+                    <input id="loginUsername" type="text" placeholder="Enter your username" autocomplete="username" />
+                </label>
+
+                <label>
+                    <span>Password</span>
+                    <input id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
+                </label>
+
+                <label>
+                    <span>Role</span>
+                    <select id="loginRole">
+                        <option value="student">Student / User</option>
+                        <option value="admin">Admin / HOD / Teacher</option>
+                    </select>
+                </label>
+
+                <button type="submit" class="primary-btn">Sign in</button>
+            </form>
+
+            <div class="demo-box">
+                <strong>Demo accounts</strong>
+                <div>Student: student / campus123</div>
+                <div>Admin: admin / campusadmin</div>
+            </div>
+
+            <div id="loginMessage" class="message-box hidden"></div>
+        </div>
+    </div>
+
+    <div id="appShell" class="app-shell hidden">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-mark small">🏛️</div>
+                <div>
+                    <div class="eyebrow">Campus Knowledge</div>
+                    <h3>Campus Nexus AI</h3>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="chat-view">💬 AI Chatbot</button>
+                <button class="nav-btn" data-tab="documents-view">📂 Documents</button>
+                <button id="adminAnalyticsNav" class="nav-btn" data-tab="analytics-view">📊 Analytics</button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="avatar-badge" id="userBadge">SU</div>
+                <div>
+                    <div id="userName">Student User</div>
+                    <div id="userRole" class="muted-label">student</div>
+                </div>
+            </div>
+
+            <button id="logoutBtn" class="secondary-btn full-width">Logout</button>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div>
+                    <div class="eyebrow">Knowledge System</div>
+                    <h2 id="viewTitle">AI Chatbot</h2>
+                </div>
+
+                <div class="topbar-actions">
+                    <label class="lang-control">
+                        <span>🌐 Language</span>
+                        <select id="languageSelect">
+                            <option value="English">English</option>
+                            <option value="Tamil">தமிழ் (Tamil)</option>
+                            <option value="Tanglish">Tanglish</option>
+                        </select>
+                    </label>
+                    <div id="dbStatus" class="status-pill">
+                        <span class="dot green"></span>
+                        <span>Connected</span>
+                    </div>
+                    <a id="otherWorkspaceBtn" class="secondary-btn workspace-link" href="/?workspace=admin" target="_blank" rel="noopener noreferrer">Open Faculty Workspace ↗</a>
+                </div>
+            </header>
+
+            <div class="content-panel">
+                <section id="chat-view" class="view-panel active">
+                    <div class="chat-layout">
+                        <div class="chat-card">
+                            <div class="chat-header-panel">
+                                <div class="agent-avatar">🤖</div>
+                                <div>
+                                    <h3>Campus AI Assistant</h3>
+                                    <p>Ask about exam dates, fees, academic rules, hostel policies, and official notices.</p>
+                                </div>
+                            </div>
+
+                            <div id="chatMessages" class="chat-messages">
+                                <div class="message ai-message">
+                                    <div class="assistant-name">Campus Nexus</div>
+                                    <div class="msg-bubble">
+                                        Hi! What can I help you find today? Ask me about campus notices, exams, courses, or student services. I’ll check the available documents and show you the source.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="quick-prompts">
+                                <span>Suggested:</span>
+                                <button type="button" data-prompt="When do the end semester theory exams start?">📅 Exam Dates</button>
+                                <button type="button" data-prompt="What is the exam fee and late fee penalty date?">💰 Exam Fee Deadline</button>
+                                <button type="button" data-prompt="What electives are offered in CSE Semester 5?">📚 CSE Electives</button>
+                                <button type="button" data-prompt="What is the HN-AI-01 Campus Knowledge Agent challenge?">💡 HN-AI-01 Challenge</button>
+                                <button type="button" data-prompt="7th sem exam eppo start aagum?">🗣️ Tanglish</button>
+                                <button type="button" data-prompt="What is the hostel bus schedule?">🏠 Hostel Rules</button>
+                            </div>
+
+                            <div class="composer">
+                                <textarea id="queryInput" rows="2" placeholder="Ask me in English, Tamil, or Tanglish..."></textarea>
+                                <button id="sendBtn" class="primary-btn">Send</button>
+                            </div>
+                        </div>
+
+                        <aside class="side-card-stack">
+                            <div class="info-card">
+                                <h4>📄 Source Citations</h4>
+                                <div id="citationsContainer" class="citation-list">
+                                    <div class="empty-state">Ask a question to view the exact document and page citation.</div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <h4>🤖 Retrieval Pipeline</h4>
+                                <div id="agentLogsContainer" class="agent-list">
+                                    <div class="agent-row"><span>1</span><div>Ingestion Agent</div></div>
+                                    <div class="agent-row"><span>2</span><div>Retrieval Agent</div></div>
+                                    <div class="agent-row"><span>3</span><div>Answer Generation</div></div>
+                                    <div class="agent-row"><span>4</span><div>Citation Verification</div></div>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+
+                <section id="documents-view" class="view-panel">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div>
+                                <div class="eyebrow">Institutional Knowledge</div>
+                                <h3>Document Library</h3>
+                            </div>
+                            <div class="panel-actions">
+                                <button id="seedDocsBtn" class="secondary-btn hidden">Seed Sample Docs</button>
+                                <label id="uploadDocsBtn" class="secondary-btn upload-label hidden">
+                                    <input id="pdfFileInput" type="file" multiple accept=".pdf" />
+                                    Upload PDFs
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="documentsGrid" class="documents-grid"></div>
+                    </div>
+                </section>
+
+                <section id="analytics-view" class="view-panel">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div>
+                                <div class="eyebrow">Admin</div>
+                                <h3>Analytics & Knowledge Gaps</h3>
+                            </div>
+                            <button id="refreshAnalyticsBtn" class="secondary-btn" type="button">Refresh</button>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div class="metric-label">Total Queries</div>
+                                <div id="totalQueriesVal" class="metric-value">0</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Answered</div>
+                                <div id="answeredVal" class="metric-value green">0</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Not Found</div>
+                                <div id="idkVal" class="metric-value amber">0</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Indexed Docs</div>
+                                <div id="indexedDocsVal" class="metric-value blue">0</div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-columns">
+                            <div class="mini-card">
+                                <h4>Top Questions</h4>
+                                <ul id="topQueriesList" class="data-list"></ul>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Knowledge Gaps</h4>
+                                <ul id="unansweredList" class="data-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: campus-knowledge-agent
+    env: python
+    buildCommand: pip install -r requirements.txt && python generate_sample_pdfs.py
+    startCommand: uvicorn backend.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_NAME
+        value: campus_knowledge_db
+      - key: SIMILARITY_THRESHOLD
+        value: "0.35"
+      - key: MONGODB_URI
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

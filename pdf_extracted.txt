@@ -1,0 +1,253 @@
+=== PAGE 1 ===
+HACK NEXUS — Problem Statements 
+All statements : 
+Thirteen statements across four domains. Teams pick one. 
+ID Title Domain Tracks 
+HN-AI-01 Campus Knowledge 
+Agent 
+AI & ML Gemini · MongoDB · 
+Render · Multi-Agent 
+HN-AI-02 Smart Complaint 
+Triage for Civic 
+Bodies 
+AI & ML Gemini · MongoDB · 
+Render 
+HN-AI-06 Accessibility Auditor 
+for Campus & Civic 
+Websites 
+AI & ML Gemini · MongoDB · 
+Render 
+HN-AI-05 Cross-Hospital 
+Resource Rebalancer 
+AI & ML Gemini · MongoDB · 
+Render 
+HN-CS-01 Phishing Shield Cybersecurity Gemini · MongoDB 
+HN-CS-02 Secure Passwordless 
+Login Kit 
+Cybersecurity MongoDB · Render 
+HN-CS-03 Log Sentinel: AI-
+Assisted Threat 
+Detection 
+Cybersecurity Gemini · MongoDB 
+HN-CS-04 Tamper-Proof 
+Academic Credential 
+Verification 
+Cybersecurity Blockchain · 
+MongoDB · Render 
+HN-CS-05 Farm-to-Fork Supply 
+Chain Tracker 
+Cybersecurity Blockchain · 
+MongoDB 
+HN-CS-06 Transparent Donation 
+& Fund Tracking 
+Cybersecurity Blockchain · 
+MongoDB · Render 
+HN-CS-07 Decentralized 
+Freelance Escrow 
+Cybersecurity Blockchain · 
+MongoDB · Render 
+HN-FT-01 Smart Expense 
+Companion for 
+Students & Gig 
+Workers 
+FinTech Gemini · MongoDB · 
+Render 
+
+=== PAGE 2 ===
+ID Title Domain Tracks 
+HN-FT-04 Multi-Agent Portfolio 
+Rebalancer 
+FinTech Multi-Agent · 
+MongoDB 
+HN-FT-06 SME Cash Flow 
+Forecasting 
+FinTech Gemini · MongoDB · 
+Render 
+HN-X-02 Disaster Response 
+Coordination 
+Platform 
+Cross-Domain Gemini · MongoDB · 
+Render 
+A. Artificial Intelligence & Machine Learning 
+HN-AI-01: Campus Knowledge Agent 
+Tracks: Gemini · MongoDB · Render · Multi-Agent 
+Problem: Students waste hours searching for circulars, syllabi, exam timetables and department 
+notices scattered across PDFs, WhatsApp groups and notice boards. 
+Challenge: Build an AI assistant that ingests institutional documents and answers student 
+queries in natural language. Every answer must cite its source document. 
+Core deliverable: Upload 5+ PDFs and get a chat interface with grounded answers and source 
+citations. Documents and embeddings are stored in MongoDB. 
+Stretch goals: Tamil/English bilingual answers, an "I don't know" fallback when the answer is 
+not in the documents, and admin analytics on the most-asked questions. 
+HN-AI-02: Smart Complaint Triage for Civic Bodies 
+Tracks: Gemini · MongoDB · Render 
+Problem: Municipal grievance portals receive thousands of unstructured complaints, often with 
+photos. These are sorted and routed by hand, which causes long delays. 
+Challenge: Build a system that takes a complaint as text and/or image, classifies its category and 
+urgency, extracts the location, detects duplicates and routes it to the right department. 
+Core deliverable: A submission form with multimodal classification using Gemini vision and 
+text, an auto-assigned department and priority score, and a dashboard showing complaints by 
+category. 
+Stretch goals: Merging duplicate complaints, a map heatmap view, and SLA breach alerts. 
+HN-AI-06: Accessibility Auditor for Campus & Civic Websites: 
+Tracks: Gemini · MongoDB · Render 
+ 
+
+=== PAGE 3 ===
+Problem: Most college and municipal websites fail basic accessibility standards — poor 
+contrast, missing alt text, unlabeled form fields — locking out visually or motor-impaired users, 
+and manual audits are slow and rarely repeated. 
+Challenge: Build a tool that scans a given webpage (URL or uploaded HTML) and flags 
+concrete violations with the exact element at fault, plus a ready-to-use fix for each. 
+Core Deliverable (12h): URL/HTML input, detection for 3 violation categories (alt text, 
+contrast, form labels), a report listing each violation with its element and severity, and a Gemini-
+generated fix suggestion per violation, logged to MongoDB. 
+Stretch : A 4th category (heading structure), a before/after preview applying the fixes, a 
+downloadable patch file 
+HN-AI-05 (revised): Cross-Hospital Resource Rebalance: 
+Track: Gemini · MongoDB · Render 
+Problem: Existing bed/oxygen/ventilator dashboards only show each hospital's own stock in 
+isolation — nobody is looking across hospitals in the same district to see that Hospital A is about 
+to run short while Hospital B has spare capacity sitting unused right now. 
+Challenge: Using a small simulated live feed (5–6 hospitals, one resource type e.g. oxygen 
+cylinders, updated every few seconds) build a system that predicts which hospital will run short 
+within the next few hours using a lightweight trend model, and simultaneously recommends a 
+specific transfer (from which hospital, how much, by when) to prevent it — turning prediction 
+into an actionable redistribution plan, not just a warning. 
+Core deliverables: Simulated multi-hospital resource stream written to MongoDB → simple 
+trend-based shortage predictor per hospital (e.g., linear depletion rate) with a visible 
+confidence/accuracy check against held-out simulated data → Render dashboard showing live 
+stock per hospital, predicted time-to-shortage, and a ranked transfer recommendation → Gemini-
+generated one-line justification per recommendation ("Move 40 units from B to A — B has 6hrs 
+surplus, A depletes in 2hrs"). 
+B. Cybersecurity & Blockchain 
+HN-CS-04 to HN-CS-07 were previously numbered HN-BC-01, HN-BC-02, HN-BC-03 and 
+HN-BC-05. Each still requires a smart contract on a public testnet. 
+HN-CS-01: Phishing Shield 
+Tracks: Gemini · MongoDB 
+Problem: Phishing through SMS, email and fake payment links is the leading cause of digital 
+fraud in India. First-time internet users are the most vulnerable. 
+Challenge: Build a tool that analyses a suspicious message, URL or screenshot and returns a risk 
+verdict with a simple explanation of why it is dangerous. 
+
+=== PAGE 4 ===
+Core deliverable: Input as text, URL or screenshot. Output is a risk score plus the red flags 
+found, such as domain age, lookalike domains and urgency language. Every scan is logged to 
+MongoDB. 
+Stretch goals: A browser extension or WhatsApp-style share target, a community-reported scam 
+database, and regional-language explanations. 
+HN-CS-02: Secure Passwordless Login Kit 
+Tracks: MongoDB · Render 
+Problem: Small web apps built by startups and college teams still rely on weak password-only 
+authentication. 
+Challenge: Build a drop-in authentication module supporting passwordless login through magic 
+links, OTP or passkeys/WebAuthn, with rate limiting, session management and suspicious-login 
+detection. 
+Core deliverable: A working demo app using the module, deployed on Render, with at least one 
+passwordless method, brute-force protection and a login activity log. 
+Stretch goals: Role-based access control, new-device and new-location alerts, and clear 
+documentation so other teams can integrate it. 
+HN-CS-03: Log Sentinel: AI-Assisted Threat Detection 
+Tracks: Gemini · MongoDB 
+Problem: Small organisations generate server logs but have no security team to monitor them, 
+so attacks go unnoticed. 
+Challenge: Build a system that ingests web server or auth logs, detects anomalies such as brute-
+force attempts, SQL injection patterns and unusual access, and summarises incidents in plain 
+language. 
+Core deliverable: Log upload or streaming, rule-based plus ML detection, an incident 
+dashboard, and Gemini-written incident summaries with suggested responses. 
+Stretch goals: Timeline reconstruction of an attack, email alerts, and mapping to MITRE 
+ATT&CK techniques. 
+HN-CS-04: Tamper-Proof Academic Credential Verification 
+Tracks: Blockchain · MongoDB · Render 
+Problem: Fake degree certificates are a recurring problem, and verifying credentials with 
+universities is slow and manual. 
+Challenge: Build a DApp where institutions issue certificates whose hashes are stored on-chain. 
+Employers can verify any certificate instantly through a QR code or file upload. 
+
+=== PAGE 5 ===
+Core deliverable: A smart contract deployed on a testnet such as Sepolia or Polygon Amoy, an 
+institution issuing portal, and a public verification page that flags tampered files. 
+Stretch goals: Revocation support, bulk issuance, and soulbound tokens for credentials. 
+HN-CS-05: Farm-to-Fork Supply Chain Tracker 
+Tracks: Blockchain · MongoDB 
+Problem: Consumers cannot verify the origin or authenticity of produce labelled organic or 
+locally sourced, and farmers get little credit for quality. 
+Challenge: Build a supply-chain transparency system where each stage, from farmer to 
+aggregator to transporter to retailer, records a handoff on-chain. Consumers scan a QR code to 
+see the product's journey. 
+Core deliverable: A smart contract for product batches and handoffs, role-based stakeholder 
+interfaces, and a consumer QR scan page showing the timeline. 
+Stretch goals: Off-chain storage of metadata and images in MongoDB or IPFS, and a direct tip 
+or payment option to the farmer. 
+HN-CS-06: Transparent Donation & Fund Tracking 
+Tracks: Blockchain · MongoDB · Render 
+Problem: Donors to NGOs, college clubs and relief funds have no visibility into how their 
+money is actually spent. 
+Challenge: Build a DApp where donations and expenditures are recorded on-chain, funds are 
+released only on milestone approval, and donors can trace their contribution. 
+Core deliverable: Donations via testnet tokens, milestone-based fund release through a smart 
+contract, and a public transparency dashboard. 
+Stretch goals: multi-signature approval for fund release, proof-of-spend uploads such as bills 
+and photos, and donor impact reports. 
+HN-CS-07: Decentralized Freelance Escrow 
+Tracks: Blockchain · MongoDB · Render 
+Problem: Freelancers and clients often face disputes over payment, delivery and project 
+completion. 
+Challenge: Build a smart-contract-based freelance platform where payment is locked in escrow 
+and released according to predefined milestones. 
+Core deliverable: Project creation, milestone definition, escrow deposit, work submission, 
+approval and payment release. 
+
+=== PAGE 6 ===
+Stretch goals: A dispute resolution workflow, multi-signature arbitration, and reputation 
+records. 
+C. FinTech 
+HN-FT-01: Smart Expense Companion for Students & Gig Workers 
+Tracks: Gemini · MongoDB · Render 
+Problem: Students and gig workers have irregular income and limited financial literacy, and 
+they rarely track their spending. 
+Challenge: Build a personal finance app that auto-categorizes expenses from SMS text, receipts 
+or manual entry, forecasts the month-end balance, and gives personalized savings advice. 
+Core deliverable: Expense entry including receipt image parsing, auto-categorization, a 
+spending dashboard, and a balance forecast. 
+Stretch goals: A conversational "Can I afford this?" assistant, savings goals with nudges, and 
+budgeting for irregular income. 
+HN-FT-04: Multi-Agent Portfolio Rebalancer: 
+Track: Multi-Agent · MongoDB 
+Problem: Individual investors can't react to live market shifts fast enough to keep their portfolio 
+aligned with their risk tolerance, and manual rebalancing is slow, error-prone, and reactive rather 
+than continuous. 
+Challenge: Build a council of collaborating agents — one that scrapes/streams live market data, 
+one that evaluates the user's risk tolerance and target allocation, and one that computes and 
+executes rebalancing trades — coordinating through MongoDB as shared state, with the council 
+converging on a final rebalancing decision. 
+Core deliverables: Live market data ingestion via web scraping into MongoDB → risk-
+tolerance agent producing a target allocation profile → rebalancing agent generating trade 
+actions to close the gap between current and target allocation → council/coordinator logic that 
+merges all three agents' outputs into one decision → evaluation dashboard reporting decision 
+time and rebalancing accuracy (drift from target allocation) per run. 
+HN-FT-06: SME Cash Flow Forecasting 
+Tracks: Gemini · MongoDB · Render 
+Problem: Small businesses often make operational decisions without a clear view of their near-
+term cash position. 
+Challenge: Build a forecasting system that analyses historical sales, expenses, invoices and 
+payment patterns to estimate future cash flow. 
+
+=== PAGE 7 ===
+Core deliverable: Dataset ingestion, a cash-flow forecast, an income and expense dashboard, 
+and low-cash alerts. 
+Stretch goals: What-if scenarios, delayed-payment simulation, and AI-generated business 
+insights. 
+D. Cross-Domain 
+HN-X-02: Disaster Response Coordination Platform 
+Tracks: Gemini · MongoDB · Render 
+Problem: During emergencies, information about incidents, resources, volunteers and requests 
+for help is fragmented across many communication channels. 
+Challenge: Build a platform that collects incident reports and intelligently matches requests with 
+available resources and responders. 
+Core deliverable: Incident reporting, classification, priority assignment, resource matching, and 
+a coordination dashboard. 
+Stretch goals: Multilingual reporting, duplicate incident detection, map visualization, and AI-
+generated situation summaries. 
+
