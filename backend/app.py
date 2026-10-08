@@ -18,6 +18,7 @@ from backend.config import (
     ADMIN_PASSWORD,
     ADMIN_USERNAME,
     APP_SECRET_KEY,
+    CORS_ORIGINS,
     DATABASE_NAME,
     PORT,
     STUDENT_PASSWORD,
@@ -38,8 +39,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -112,6 +113,11 @@ def health_check():
     }
 
 
+@app.get("/health")
+def deployment_health_check():
+    return {"status": "ok"}
+
+
 @app.post("/api/login")
 def login_user(req: LoginRequest):
     user_map = {
@@ -170,24 +176,19 @@ async def upload_documents(
     current_user: dict = Depends(require_admin),
 ):
     results = []
-    os.makedirs("uploaded_docs", exist_ok=True)
-
     for file in files:
         if not file.filename or not file.filename.lower().endswith(".pdf"):
             continue
 
-        save_path = os.path.join("uploaded_docs", file.filename)
+        filename = os.path.basename(file.filename.replace("\\", "/"))
         try:
-            with open(save_path, "wb") as f:
-                content = await file.read()
-                f.write(content)
-
-            res = ingestion_engine.process_pdf_file(save_path, custom_filename=file.filename)
+            content = await file.read()
+            res = ingestion_engine.process_pdf_bytes(content, custom_filename=filename)
             results.append(res)
         except Exception as e:
-            logger.warning(f"Document upload failed for {file.filename}: {e}")
+            logger.warning(f"Document upload failed for {filename}: {e}")
             results.append({
-                "file_name": file.filename,
+                "file_name": filename,
                 "status": "error",
                 "message": "We couldn't process this document. Please try again or upload a valid PDF.",
             })
@@ -227,7 +228,6 @@ def process_query(req: QueryRequest, current_user: dict = Depends(get_current_us
             "language": normalized_lang,
             "latency_ms": 0,
             "agent_logs": [],
-            "error": str(exc),
         }
 
 

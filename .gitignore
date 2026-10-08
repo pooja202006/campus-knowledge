@@ -1,6 +1,8 @@
 .env
 .env.*
+*.env
 !.env.example
+.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -10,5 +12,8 @@ venv/
 env/
 ENV/
 uploaded_docs/
+node_modules/
+dist/
+build/
 *.log
 .DS_Store

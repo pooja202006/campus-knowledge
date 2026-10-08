@@ -1,105 +1,77 @@
-# Campus Knowledge AI
+# Campus Knowledge Agent
 
-A lightweight campus knowledge assistant that ingests institutional PDF documents, indexes them for retrieval, and answers student questions with source-backed citations.
+FastAPI serves the static HTML/CSS/JavaScript interface and JSON API from one origin. MongoDB Atlas stores documents, chunks, and query analytics; Gemini provides embeddings and grounded point selection.
 
-## Features
+## Project Structure
 
-- Multi-file PDF upload and ingestion
-- Query processing with semantic retrieval and citation output
-- Local fallback database mode when cloud services are unavailable
-- Student chat UI with language support for English, Tamil, and Tanglish
-- Admin analytics dashboard for query tracking
+- `backend/` — FastAPI routes, authentication, Atlas access, PDF ingestion, and RAG flow
+- `frontend/` — static single-page UI; there is no React, Vite, Node package, or frontend build
+- `sample_docs/` — committed PDFs indexed by the faculty Seed action
+- `uploaded_docs/` — ignored local legacy upload folder; new uploads are parsed in memory and stored as chunks/metadata in Atlas
+- `render.yaml` — single Render Python Web Service
 
-## Project structure
+## Local Run
 
-- `backend/` — FastAPI application, database logic, ingestion, and multi-agent query pipeline
-- `frontend/` — static HTML, CSS, and JavaScript UI
-- `sample_docs/` — sample campus PDFs used for local testing
-- `.env.example` — environment variable template
-- `requirements.txt` — Python dependencies
-
-## Requirements
-
-- Python 3.10+
-- pip
-- Optional: MongoDB Atlas connection string
-- Optional: Gemini API key
-
-## Setup
-
-1. Open a terminal in the project root.
-2. Create a virtual environment (optional but recommended):
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-On Windows PowerShell:
+Requires Python 3.11 and pip. In PowerShell from the repository root:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-3. Install dependencies:
-
-```bash
 pip install -r requirements.txt
-```
-
-4. Copy the example environment file and set your real credentials if available:
-
-```bash
-copy .env.example .env
-```
-
-Then edit `.env` with values like:
-
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
-GEMINI_API_KEY=your_gemini_api_key_here
-DATABASE_NAME=campus_knowledge_db
-PORT=8000
-SIMILARITY_THRESHOLD=0.35
-```
-
-If you do not provide MongoDB or Gemini credentials, the app will still run in local fallback mode and can still ingest sample documents for demo use.
-
-## Run the app
-
-From the project root:
-
-```bash
+Copy-Item .env.example .env
 python -m uvicorn backend.app:app --host 0.0.0.0 --port 8000
 ```
 
-Then open:
+Open `http://localhost:8000`. Development defaults are configured in `backend/config.py`; they are not accepted in production. Set `MONGODB_URI` and `GEMINI_API_KEY` in `.env` to use Atlas and Gemini.
+
+## API
+
+- `GET /health` — deployment health, returns `{"status":"ok"}` without service details
+- `GET /api/health` — application/database status for the UI
+- `POST /api/login` — authenticates a student or admin account
+- `GET /api/me` — current authenticated account
+- `GET /api/documents` — indexed document list
+- `POST /api/upload` — admin-only PDF ingestion
+- `POST /api/seed` — admin-only indexing of `sample_docs/*.pdf`
+- `POST /api/query` — authenticated English/Tamil/Tanglish RAG query
+- `GET /api/analytics` — admin-only query analytics and knowledge gaps
+
+All endpoints except health require a bearer token where indicated by the route. The browser sends same-origin API requests; do not add a production localhost URL.
+
+## Render Deployment
+
+This repository uses one **Web Service**, not a Static Site: the frontend is served by FastAPI and shares relative `/api/*` routes. No React Router rewrite or frontend publish directory is needed.
+
+Create a Render Web Service from the GitHub repository with:
+
+- Root directory: repository root
+- Runtime: Python
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn backend.app:app --host 0.0.0.0 --port $PORT`
+
+Set these Render environment variables:
 
 ```text
-http://localhost:8000
+APP_ENV=production
+PYTHON_VERSION=3.11.9
+DATABASE_NAME=campus_knowledge_db
+SIMILARITY_THRESHOLD=0.35
+MONGODB_URI=<Atlas connection string>
+GEMINI_API_KEY=<Gemini key>
+APP_SECRET_KEY=<unique random value, at least 32 characters>
+STUDENT_USERNAME=<student login name>
+STUDENT_PASSWORD=<unique password, at least 12 characters>
+ADMIN_USERNAME=<faculty login name>
+ADMIN_PASSWORD=<different unique password, at least 12 characters>
+FRONTEND_URL=https://YOUR-SERVICE.onrender.com
 ```
 
-## Seed sample campus documents
+Enter secret values in Render's dashboard, not in this repository or `render.yaml`. Production startup fails if Atlas/Gemini credentials, a strong signing key, or distinct strong passwords are missing. CORS permits the configured `FRONTEND_URL` and the local development origins; same-origin requests on the single service do not require CORS.
 
-You can use the built-in upload UI or call the API:
+Before deploy, remove/rotate any credential that may have been valid in the previous tracked `.env.example`. Keep `.env` local; it is ignored by Git. Atlas must allow connections from Render's outbound IP ranges, or use a restricted network policy appropriate for the Render plan. Use a dedicated Atlas database user with only the required database permissions.
 
-```bash
-curl -X POST http://localhost:8000/api/seed
-```
+## GitHub And Smoke Tests
 
-This processes the sample PDFs from the `sample_docs/` folder.
+Commit source, `requirements.txt`, `render.yaml`, `.env.example`, and intended sample PDFs. Do not commit `.env`, uploaded PDFs, keys, or generated local data. Check with `git status` before pushing.
 
-## Example query
-
-```bash
-curl -X POST http://localhost:8000/api/query \
-  -H "Content-Type: application/json" \
-  -d '{"query":"When do the end semester theory exams start?","language":"English"}'
-```
-
-## Notes
-
-- The project is designed to work both with cloud services and without them.
-- If cloud credentials are missing, queries still work against local memory storage and fallback synthesis for demonstrations.
-- For production use, provide both a valid MongoDB URI and Gemini API key.
+After deployment, check `https://YOUR-SERVICE.onrender.com/health`, sign in as both roles, verify a student receives `403` from `/api/analytics`, upload a PDF as admin, then ask a question from it and check the citation. Test an unrelated question for the exact “I couldn't find this information in the available campus documents.” fallback.

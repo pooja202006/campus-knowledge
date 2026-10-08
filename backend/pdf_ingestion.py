@@ -2,6 +2,7 @@ import os
 import re
 import uuid
 import logging
+from io import BytesIO
 import pypdf
 from backend.gemini_client import gemini_service
 from backend.database import db_instance
@@ -15,11 +16,16 @@ class PDFIngestionEngine:
 
     def process_pdf_file(self, file_path: str, custom_filename: str = None) -> dict:
         filename = custom_filename or os.path.basename(file_path)
+        with open(file_path, "rb") as pdf_file:
+            return self.process_pdf_bytes(pdf_file.read(), custom_filename=filename)
+
+    def process_pdf_bytes(self, pdf_bytes: bytes, custom_filename: str) -> dict:
+        filename = custom_filename
         existing_document = db_instance.get_document_by_filename(filename)
         doc_id = existing_document.get("document_id") if existing_document else f"doc_{uuid.uuid4().hex[:8]}"
 
         try:
-            reader = pypdf.PdfReader(file_path)
+            reader = pypdf.PdfReader(BytesIO(pdf_bytes))
             num_pages = len(reader.pages)
             all_chunks = []
 
