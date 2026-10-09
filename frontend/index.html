@@ -33,18 +33,16 @@
 
                 <label>
                     <span>Password</span>
-                    <input id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
+                    <div class="password-field">
+                        <input id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
+                        <button type="button" id="togglePasswordBtn" class="password-toggle" aria-label="Show password">Show</button>
+                    </div>
                 </label>
 
-                <label>
-                    <span>Role</span>
-                    <select id="loginRole">
-                        <option value="student">Student / User</option>
-                        <option value="admin">Admin / HOD / Teacher</option>
-                    </select>
-                </label>
-
-                <button type="submit" class="primary-btn">Sign in</button>
+                <button type="submit" id="loginSubmitBtn" class="primary-btn">
+                    <span class="btn-label">Sign in</span>
+                    <span id="loginLoading" class="spinner hidden" aria-hidden="true"></span>
+                </button>
             </form>
 
             <div id="loginMessage" class="message-box hidden"></div>
@@ -98,7 +96,7 @@
                         <span class="dot green"></span>
                         <span>Connected</span>
                     </div>
-                    <a id="otherWorkspaceBtn" class="secondary-btn workspace-link" href="/?workspace=admin" target="_blank" rel="noopener noreferrer">Open Faculty Workspace ↗</a>
+                    <a id="otherWorkspaceBtn" class="secondary-btn workspace-link" href="/" target="_blank" rel="noopener noreferrer">Open Workspace ↗</a>
                 </div>
             </header>
 

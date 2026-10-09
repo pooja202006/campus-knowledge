@@ -8,6 +8,7 @@ import os
 import time
 from typing import List, Optional
 
+import bcrypt
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -55,6 +56,30 @@ class LoginRequest(BaseModel):
     username: str
     password: str
     role: Optional[str] = None
+
+
+def _build_account_store() -> dict:
+    account_entries = (
+        (STUDENT_USERNAME, "student", "Student User", STUDENT_PASSWORD),
+        (ADMIN_USERNAME, "admin", "HOD / Teacher", ADMIN_PASSWORD),
+        ("hod", "admin", "HOD / Teacher", ADMIN_PASSWORD),
+        ("teacher", "admin", "Teacher", ADMIN_PASSWORD),
+    )
+    store = {}
+    for username, role, display_name, password in account_entries:
+        if not username:
+            continue
+        password_bytes = (password or "").encode("utf-8")
+        store[username] = {
+            "username": username,
+            "role": role,
+            "name": display_name,
+            "password_hash": bcrypt.hashpw(password_bytes, bcrypt.gensalt(rounds=12)).decode("utf-8"),
+        }
+    return store
+
+
+USER_ACCOUNT_STORE = _build_account_store()
 
 
 def _encode_token(payload: dict) -> str:
@@ -120,36 +145,32 @@ def deployment_health_check():
 
 @app.post("/api/login")
 def login_user(req: LoginRequest):
-    user_map = {
-        STUDENT_USERNAME: {"role": "student", "name": "Student User"},
-        ADMIN_USERNAME: {"role": "admin", "name": "HOD / Teacher"},
-        "hod": {"role": "admin", "name": "HOD / Teacher"},
-        "teacher": {"role": "admin", "name": "Teacher"},
-    }
+    username = (req.username or "").strip()
+    password = req.password or ""
 
-    if req.username == STUDENT_USERNAME and req.password == STUDENT_PASSWORD:
-        user = user_map[STUDENT_USERNAME]
-    elif req.username in user_map and req.password == ADMIN_PASSWORD and req.username in {ADMIN_USERNAME, "hod", "teacher"}:
-        user = user_map[req.username]
-    else:
+    if not username or not password:
         raise HTTPException(status_code=401, detail="Invalid username or password.")
 
-    if req.role and req.role != user["role"]:
-        raise HTTPException(status_code=403, detail="The selected role does not match this account.")
+    account = USER_ACCOUNT_STORE.get(username)
+    if not account:
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
+
+    if not bcrypt.checkpw(password.encode("utf-8"), account["password_hash"].encode("utf-8")):
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
 
     token = _encode_token({
-        "username": req.username,
-        "role": user["role"],
-        "name": user["name"],
+        "username": username,
+        "role": account["role"],
+        "name": account["name"],
         "exp": int(time.time()) + 86400,
     })
 
     return {
         "token": token,
         "user": {
-            "username": req.username,
-            "role": user["role"],
-            "name": user["name"],
+            "username": username,
+            "role": account["role"],
+            "name": account["name"],
         },
     }
 

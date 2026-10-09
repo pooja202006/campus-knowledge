@@ -1,4 +1,6 @@
 import os
+import secrets
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,7 +25,7 @@ CORS_ORIGINS.extend(
 	if origin.strip()
 )
 
-APP_SECRET_KEY = os.getenv("APP_SECRET_KEY", "campus-nexus-secret-key")
+APP_SECRET_KEY = os.getenv("APP_SECRET_KEY") or secrets.token_urlsafe(32)
 STUDENT_USERNAME = os.getenv("STUDENT_USERNAME", "student")
 STUDENT_PASSWORD = os.getenv("STUDENT_PASSWORD", "campus123")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")

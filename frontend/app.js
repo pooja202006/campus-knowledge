@@ -8,16 +8,19 @@ const state = {
 document.addEventListener('DOMContentLoaded', () => {
     bindEvents();
     syncLanguageSelector('English');
-    const requestedWorkspace = new URLSearchParams(window.location.search).get('workspace');
-    if (['student', 'admin'].includes(requestedWorkspace)) {
-        document.getElementById('loginRole').value = requestedWorkspace;
-    }
     checkAuth();
     checkHealth();
 });
 
 function bindEvents() {
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('togglePasswordBtn').addEventListener('click', () => {
+        const passwordInput = document.getElementById('loginPassword');
+        const isHidden = passwordInput.type === 'password';
+        passwordInput.type = isHidden ? 'text' : 'password';
+        document.getElementById('togglePasswordBtn').textContent = isHidden ? 'Hide' : 'Show';
+        document.getElementById('togglePasswordBtn').setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('sendBtn').addEventListener('click', submitQuery);
     document.getElementById('queryInput').addEventListener('keydown', (event) => {
@@ -111,9 +114,8 @@ function renderAuthenticatedView() {
     document.getElementById('userRole').textContent = state.user.role;
     document.getElementById('userBadge').textContent = (state.user.name || state.user.username).slice(0, 2).toUpperCase();
     const otherWorkspaceLink = document.getElementById('otherWorkspaceBtn');
-    const otherRole = isAdmin ? 'student' : 'admin';
-    otherWorkspaceLink.href = `/?workspace=${otherRole}`;
-    otherWorkspaceLink.textContent = `Open ${isAdmin ? 'Student' : 'Faculty'} Workspace ↗`;
+    otherWorkspaceLink.href = '/';
+    otherWorkspaceLink.textContent = isAdmin ? 'Open Student Workspace ↗' : 'Open Workspace ↗';
 
     document.getElementById('adminAnalyticsNav').classList.toggle('hidden', !isAdmin);
     document.getElementById('seedDocsBtn').classList.toggle('hidden', !isAdmin);
@@ -136,15 +138,18 @@ function logout() {
     showLogin();
     document.getElementById('loginUsername').value = '';
     document.getElementById('loginPassword').value = '';
-    document.getElementById('loginRole').value = 'student';
     document.getElementById('loginMessage').classList.add('hidden');
+    document.getElementById('togglePasswordBtn').textContent = 'Show';
+    document.getElementById('togglePasswordBtn').setAttribute('aria-label', 'Show password');
+    document.getElementById('loginPassword').type = 'password';
 }
 
 async function handleLogin(event) {
     event.preventDefault();
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
-    const role = document.getElementById('loginRole').value;
+    const submitButton = document.getElementById('loginSubmitBtn');
+    const loadingIndicator = document.getElementById('loginLoading');
     const messageBox = document.getElementById('loginMessage');
 
     if (!username || !password) {
@@ -152,11 +157,15 @@ async function handleLogin(event) {
         return;
     }
 
+    submitButton.disabled = true;
+    submitButton.querySelector('.btn-label').textContent = 'Signing in...';
+    loadingIndicator.classList.remove('hidden');
+
     try {
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password, role }),
+            body: JSON.stringify({ username, password }),
         });
 
         const data = await response.json();
@@ -173,6 +182,10 @@ async function handleLogin(event) {
         }
     } catch (error) {
         showLoginMessage(error.message || 'Unable to login right now. Please try again.', true);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.querySelector('.btn-label').textContent = 'Sign in';
+        loadingIndicator.classList.add('hidden');
     }
 }
 
